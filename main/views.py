@@ -27,32 +27,35 @@ def load_stock_data(request):
 
     result = parse_stock_csv(requests.post(url, data=post_data), request.data['symbol'])
 
-    return Response(result)
+    return JsonResponse(result, safe=False)
 
 
 def parse_stock_csv(data, symbol):
     text = StringIO(data.content.decode('utf-8', 'ignore'))
     reader = csv.reader(text, delimiter=',', lineterminator='\n')
-    result = []
     next(reader)
     next(reader)
-    for row in reader:
+    for id, row in enumerate(reader):
         if row[0] == 'Liczba wierszy ograniczona do 50':
             break
-        print(row)
-        result.append(StockData(
-            symbol=symbol,
-            date=row[0],
-            open=row[1],
-            min=row[2],
-            max=row[3],
-            close=row[4],
-            change=row[5],
-            value=row[6]
-        ))
+        serializer = StockSerializer(data={
+            'symbol': symbol,
+            'date': row[0],
+            'open': row[1],
+            'min': row[2],
+            'max': row[3],
+            'close': row[4],
+            'change': row[5],
+            'value': row[6]
+        })
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            print('error at', id)
+            return JsonResponse(serializer.errors, status=400)
 
-    serializer = StockSerializer(result, many=True)
-    return JsonResponse(serializer.data, safe=False)
+    serializer = StockSerializer(StockData.objects.all(), many=True)
+    return serializer.data
 
 
 @csrf_exempt
