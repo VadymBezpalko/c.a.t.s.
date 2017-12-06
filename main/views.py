@@ -5,7 +5,6 @@ from django.http import HttpResponse, JsonResponse
 from rest_framework.decorators import api_view
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
-from rest_framework.response import Response
 from main.models import StockData
 from main.serializers import StockSerializer
 import requests
@@ -41,7 +40,6 @@ def parse_stock_csv(data, symbol):
     for id, row in enumerate(reader):
         if row[0] == 'Liczba wierszy ograniczona do 50':
             break
-        print(row)
         serializer = StockSerializer(data={
             'symbol': symbol,
             'date': row[0],
@@ -70,7 +68,14 @@ def stock_list(request):
     if request.method == 'GET':
         snippets = StockData.objects.all()
         serializer = StockSerializer(snippets, many=True)
-        return JsonResponse(serializer.data, safe=False)
+        result = serializer.data
+
+        sort_by = request.GET.get('sortBy', None)
+
+        if sort_by is not None:
+            result.sort(key=lambda x: x[sort_by], reverse=False)
+
+        return JsonResponse(result, safe=False)
 
     elif request.method == 'POST':
         data = JSONParser().parse(request)
