@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from main import views
+from stock_data import views
 
 urlpatterns = [
     url(r'^stock/load$', views.load_stock_data),

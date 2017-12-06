@@ -5,8 +5,8 @@ from django.http import HttpResponse, JsonResponse
 from rest_framework.decorators import api_view
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
-from main.models import StockData
-from main.serializers import StockSerializer
+from stock_data.models import StockData
+from stock_data.serializers import StockDataSerializer
 import requests
 import csv
 from io import StringIO
@@ -25,14 +25,14 @@ def load_stock_data(request):
     }
 
     try:
-        result = parse_stock_csv(requests.post(url, data=post_data), request.data['symbol'])
+        result = save_stock_csv(requests.post(url, data=post_data), request.data['symbol'])
     except ValueError as err:
         return JsonResponse(err.args, status=400, safe=False)
 
     return JsonResponse(result, safe=False)
 
 
-def parse_stock_csv(data, symbol):
+def save_stock_csv(data, symbol):
     text = StringIO(data.content.decode('utf-8', 'ignore'))
     reader = csv.reader(text, delimiter=',', lineterminator='\n')
     next(reader)
@@ -40,7 +40,7 @@ def parse_stock_csv(data, symbol):
     for id, row in enumerate(reader):
         if row[0] == 'Liczba wierszy ograniczona do 50':
             break
-        serializer = StockSerializer(data={
+        serializer = StockDataSerializer(data={
             'symbol': symbol,
             'date': row[0],
             'open': row[1].replace(',', '.'),
@@ -56,7 +56,7 @@ def parse_stock_csv(data, symbol):
             print('error at', id)
             raise ValueError(serializer.errors)
 
-    serializer = StockSerializer(StockData.objects.all(), many=True)
+    serializer = StockDataSerializer(StockData.objects.all(), many=True)
     return serializer.data
 
 
@@ -67,7 +67,7 @@ def stock_list(request):
     """
     if request.method == 'GET':
         snippets = StockData.objects.all()
-        serializer = StockSerializer(snippets, many=True)
+        serializer = StockDataSerializer(snippets, many=True)
         result = serializer.data
 
         sort_by = request.GET.get('sortBy', None)
@@ -79,7 +79,7 @@ def stock_list(request):
 
     elif request.method == 'POST':
         data = JSONParser().parse(request)
-        serializer = StockSerializer(data=data)
+        serializer = StockDataSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=201)
@@ -92,22 +92,22 @@ def stock_item_detail(request, pk):
     Retrieve, update or delete a code snippet.
     """
     try:
-        snippet = StockData.objects.get(pk=pk)
+        stock_item = StockData.objects.get(pk=pk)
     except StockData.DoesNotExist:
         return HttpResponse(status=404)
 
     if request.method == 'GET':
-        serializer = StockSerializer(snippet)
+        serializer = StockDataSerializer(stock_item)
         return JsonResponse(serializer.data)
 
     elif request.method == 'PUT':
         data = JSONParser().parse(request)
-        serializer = StockSerializer(snippet, data=data)
+        serializer = StockDataSerializer(stock_item, data=data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data)
         return JsonResponse(serializer.errors, status=400)
 
     elif request.method == 'DELETE':
-        snippet.delete()
+        stock_item.delete()
         return HttpResponse(status=204)
