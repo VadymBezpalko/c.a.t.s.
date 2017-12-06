@@ -25,7 +25,10 @@ def load_stock_data(request):
         'format': request.data['format']
     }
 
-    result = parse_stock_csv(requests.post(url, data=post_data), request.data['symbol'])
+    try:
+        result = parse_stock_csv(requests.post(url, data=post_data), request.data['symbol'])
+    except ValueError as err:
+        return JsonResponse(err.args, status=400, safe=False)
 
     return JsonResponse(result, safe=False)
 
@@ -38,21 +41,22 @@ def parse_stock_csv(data, symbol):
     for id, row in enumerate(reader):
         if row[0] == 'Liczba wierszy ograniczona do 50':
             break
+        print(row)
         serializer = StockSerializer(data={
             'symbol': symbol,
             'date': row[0],
-            'open': row[1],
-            'min': row[2],
-            'max': row[3],
-            'close': row[4],
-            'change': row[5],
-            'value': row[6]
+            'open': row[1].replace(',', '.'),
+            'min': row[2].replace(',', '.'),
+            'max': row[3].replace(',', '.'),
+            'close': row[4].replace(',', '.'),
+            'change': row[5].replace(',', '.'),
+            'value': row[6].replace(',', '.')
         })
         if serializer.is_valid():
             serializer.save()
         else:
             print('error at', id)
-            return JsonResponse(serializer.errors, status=400)
+            raise ValueError(serializer.errors)
 
     serializer = StockSerializer(StockData.objects.all(), many=True)
     return serializer.data
