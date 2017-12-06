@@ -37,9 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'stock_data.apps.MainConfig',
     'rest_framework',
-    'corsheaders'
+    'corsheaders',
+    'stock_data.apps.StockDataConfig',
+    'twitter_api.apps.TwitterApiConfig'
+
 
 ]
 

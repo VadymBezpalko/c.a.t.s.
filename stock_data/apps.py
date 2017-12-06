@@ -4,5 +4,5 @@ from __future__ import unicode_literals
 from django.apps import AppConfig
 
 
-class MainConfig(AppConfig):
+class StockDataConfig(AppConfig):
     name = 'stock_data'
