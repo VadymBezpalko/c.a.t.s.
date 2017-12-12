@@ -11,5 +11,5 @@ class TwitterData(DynamicDocument):
     status_id = StringField()
     text = StringField()
     retweet_count = FloatField()
-    created_at = StringField()
+    created_at = DateTimeField()
     user = EmbeddedDocumentField(User)
