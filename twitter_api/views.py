@@ -18,36 +18,36 @@ api = Twython(API_KEY, API_SECRET, TOKEN_KEY, TOCKET_SECRET_KEY)
 
 @api_view(['POST'])
 def get_statuses(request):
-    results = []
     tweets = api.search(q=request.data['search'], tweet_mode='extended')
+
     for tweet in tweets['statuses']:
         if 'retweeted_status' in tweet:
             tweet_text = tweet['retweeted_status']['full_text']
             tweet_id = tweet['retweeted_status']['id_str']
+            tweet_created_at = tweet['retweeted_status']['created_at']
         else:
             tweet_text = tweet['full_text']
             tweet_id = tweet['id_str']
+            tweet_created_at = tweet['created_at']
 
         serializer = TwitterDataSerializer(data={
             'status_id': tweet_id,
             'text': tweet_text,
             'retweet_count': tweet['retweet_count'],
-            'created_at': time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(tweet['created_at'],'%a %b %d %H:%M:%S +0000 %Y')),
+            'created_at': time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(tweet_created_at,'%a %b %d %H:%M:%S +0000 %Y')),
             'user': {
                 'user_id': tweet['user']['id_str'],
                 'name': tweet['user']['name']
             }
         })
+        
         if serializer.is_valid():
             try:
                 temp = TwitterData.objects.get(status_id=tweet_id)
-                print('object already exists, updating...')
                 temp['retweet_count'] = tweet['retweet_count']
                 serializer = temp
             except TwitterData.DoesNotExist:
-                print('not such object found...')
-
-            print('saving object...')
+                pass
             serializer.save()
         else:
             return JsonResponse(serializer.errors, status=400, safe=False)
