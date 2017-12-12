@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from django.db import models
+from mongoengine import Document, fields
 
 
 # Create your models here.
 
-class StockData(models.Model):
-    symbol = models.CharField(max_length=50, default='')
-    date = models.DateField()
-    open = models.FloatField()
-    min = models.FloatField()
-    max = models.FloatField()
-    close = models.FloatField()
-    change = models.FloatField()
-    value = models.FloatField()
+class StockData(Document):
+    symbol = fields.StringField(required=True)
+    date = fields.StringField()
+    open = fields.FloatField()
+    min = fields.FloatField()
+    max = fields.FloatField()
+    close = fields.FloatField()
+    change = fields.FloatField()
+    value = fields.FloatField()
