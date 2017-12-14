@@ -51,6 +51,12 @@ def save_stock_csv(data, symbol):
             'value': row[6].replace(',', '.')
         })
         if serializer.is_valid():
+            try:
+                temp = StockData.objects.get(symbol=symbol, date=row[0])
+                serializer = temp
+            except StockData.DoesNotExist:
+                pass
+
             serializer.save()
         else:
             print('error at', id)

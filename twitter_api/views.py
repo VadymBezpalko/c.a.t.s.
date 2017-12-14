@@ -17,7 +17,7 @@ api = Twython(API_KEY, API_SECRET, TOKEN_KEY, TOCKET_SECRET_KEY)
 
 
 @api_view(['POST'])
-def get_statuses(request):
+def fetch_statuses(request):
     tweets = api.search(q=request.data['search'], tweet_mode='extended')
 
     for tweet in tweets['statuses']:
