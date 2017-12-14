@@ -1,4 +1,6 @@
 import time
+
+from django.views.decorators.csrf import csrf_exempt
 from twython import Twython
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
@@ -55,3 +57,12 @@ def fetch_statuses(request):
     serializer = TwitterDataSerializer(TwitterData.objects.all(), many=True)
 
     return JsonResponse(serializer.data, safe=False)
+
+
+@csrf_exempt
+def get_twitter_statuses_list(request):
+    twitter_data = TwitterData.objects.all()
+    serializer = TwitterDataSerializer(twitter_data, many=True)
+    result = serializer.data
+
+    return JsonResponse(result, safe=False)

@@ -67,36 +67,21 @@ def save_stock_csv(data, symbol):
 
 
 @csrf_exempt
-def stock_list(request):
-    """
-    List all code snippets, or create a new snippet.
-    """
-    if request.method == 'GET':
-        snippets = StockData.objects.all()
-        serializer = StockDataSerializer(snippets, many=True)
-        result = serializer.data
+def get_stock_list(request):
+    stock_data = StockData.objects.all()
+    serializer = StockDataSerializer(stock_data, many=True)
+    result = serializer.data
 
-        sort_by = request.GET.get('sortBy', None)
+    sort_by = request.GET.get('sortBy', None)
 
-        if sort_by is not None:
-            result.sort(key=lambda x: x[sort_by], reverse=False)
+    if sort_by is not None:
+        result.sort(key=lambda x: x[sort_by], reverse=False)
 
-        return JsonResponse(result, safe=False)
-
-    elif request.method == 'POST':
-        data = JSONParser().parse(request)
-        serializer = StockDataSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+    return JsonResponse(result, safe=False)
 
 
 @csrf_exempt
 def stock_item_detail(request, pk):
-    """
-    Retrieve, update or delete a code snippet.
-    """
     try:
         stock_item = StockData.objects.get(pk=pk)
     except StockData.DoesNotExist:
