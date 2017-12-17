@@ -13,5 +13,5 @@ class TwitterData(DynamicDocument):
     translated_text = StringField()
     retweet_count = FloatField()
     created_at = DateTimeField()
-    retweeted_at = DateTimeField()
+    retweeted_at = DateTimeField(null=True)
     user = EmbeddedDocumentField(User)

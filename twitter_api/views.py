@@ -28,12 +28,16 @@ def fetch_statuses(request):
                         count=request.data['count'])
 
     for tweet in tweets['statuses']:
+        print('-------------------')
+        print(tweet['full_text'])
         if 'retweeted_status' in tweet:
+            print('retweeted')
             tweet_text = tweet['retweeted_status']['full_text']
             tweet_id = tweet['retweeted_status']['id_str']
             created_at = tweet['retweeted_status']['created_at']
             retweeted_at = tweet['retweeted_status']['created_at']
         else:
+            print('original tweet')
             tweet_text = tweet['full_text']
             tweet_id = tweet['id_str']
             created_at = tweet['created_at']
@@ -41,22 +45,26 @@ def fetch_statuses(request):
 
         try:
             temp = TwitterData.objects.get(status_id=tweet_id)
-            temp['retweet_count'] = tweet['retweet_count']
-            serializer = temp
+            # temp['retweet_count'] = tweet['retweet_count']
+            serializer = TwitterDataSerializer(temp, data={"retweet_count": tweet["retweet_count"]})
+            print(temp)
+            print('juz jest taki tweet')
+
         except TwitterData.DoesNotExist:
+            print('tworze nowy tweet')
             serializer = TwitterDataSerializer(data={
                 'status_id': tweet_id,
                 'text': tweet_text,
-                'translated_text': translate_text(tweet_text),
+                # 'translated_text': translate_text(tweet_text),
                 'retweet_count': tweet['retweet_count'],
                 'created_at': format_date(created_at),
-                'retweeted_at': format_date(retweeted_at),
+                'retweeted_at': format_date(retweeted_at) if retweeted_at is not None else None,
                 'user': {
                     'user_id': tweet['user']['id_str'],
                     'name': tweet['user']['name']
                 }
             })
-
+        print(type(serializer))
         if serializer.is_valid():
             serializer.save()
         else:
@@ -67,8 +75,19 @@ def fetch_statuses(request):
     return JsonResponse(serializer.data, safe=False)
 
 
+@api_view(['POST'])
+def get_statuses(request):
+    tweets = api.search(q=request.data['search'],
+                        tweet_mode='extended',
+                        since=request.data['since'],
+                        until=request.data['until'],
+                        count=request.data['count'])
+
+    return JsonResponse(tweets)
+
+
 def format_date(date):
-    return time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(date,'%a %b %d %H:%M:%S +0000 %Y'))
+    return time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(date, '%a %b %d %H:%M:%S +0000 %Y'))
 
 
 def translate_text(text):
