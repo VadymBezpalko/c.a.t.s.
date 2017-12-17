@@ -110,3 +110,24 @@ def get_twitter_statuses_list(request):
     result = serializer.data
 
     return JsonResponse(result, safe=False)
+
+
+def translate_tweets(request):
+    twitter_data = TwitterData.objects.all()
+
+    for tweet in twitter_data:
+        print('-------------------')
+        print(tweet['text'])
+        if tweet['translated_text'] is None:
+            print('translating tweet...')
+            translated = translate_text(tweet['text'])
+            print(translated)
+            temp_serializer = TwitterDataSerializer(tweet, data={'translated_text': translated})
+            if temp_serializer.is_valid():
+                temp_serializer.save()
+        else:
+            print('tweet already been translated')
+
+    return JsonResponse(TwitterDataSerializer(TwitterData.objects.all(), many=True).data, safe=False)
+
+
