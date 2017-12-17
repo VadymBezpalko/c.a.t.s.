@@ -143,14 +143,14 @@ def analyze_tweets(request):
     except ValueError as err:
         return JsonResponse(err.args, status=400, safe=False)
     analyzed = json.loads(analyzed.content.decode('utf-8', 'ignore'))
-    print(json.loads(analyzed['result']))
 
-    for tweet in json.loads(analyzed['result']):
+    for tweet in analyzed['result']:
         print('-------------------')
         print(tweet)
         temp_serializer = TwitterDataSerializer(TwitterData.objects.get(
             status_id=tweet['status_id']),
-            data={'sentimental_value': tweet['sentimental_value']})
+            data={'sentimental_comparative': tweet['sentimental_comparative'],
+                  'sentimental_score': tweet['sentimental_score']})
         if temp_serializer.is_valid():
             temp_serializer.save()
 

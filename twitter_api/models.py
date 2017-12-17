@@ -15,4 +15,5 @@ class TwitterData(DynamicDocument):
     created_at = DateTimeField()
     retweeted_at = DateTimeField(null=True)
     user = EmbeddedDocumentField(User)
-    sentimental_value = FloatField()
+    sentimental_score = FloatField()
+    sentimental_comparative = FloatField()
