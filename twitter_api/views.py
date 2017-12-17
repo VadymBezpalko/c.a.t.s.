@@ -1,6 +1,9 @@
 import time
 import re
+
+import json
 from django.views.decorators.csrf import csrf_exempt
+import requests
 from twython import Twython
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
@@ -8,13 +11,13 @@ from googletrans import Translator
 
 from twitter_api.serializers import TwitterDataSerializer
 from twitter_api.models import TwitterData
+
 # Create your views here.
 
 API_KEY = 'gmYLVJ21JFa0YB8zhIo71GJ9m'
 API_SECRET = '3CB6gOeqqpYLQ1Y1rlkVbvriCQjdyg3pXfq3kSpdjIR9kToSxj'
 TOKEN_KEY = '3365870121-PcBq6nthIQRWrcGwNRg1xUW5LGaOJ9CLd8262Ie'
 TOCKET_SECRET_KEY = 'AVUuT3QGFPK6x5icab7aSdI9fjC0Cje2tkLVsnIhfX9yI'
-
 
 api = Twython(API_KEY, API_SECRET, TOKEN_KEY, TOCKET_SECRET_KEY)
 
@@ -103,6 +106,7 @@ def translate_text(text):
 
     return text
 
+
 @csrf_exempt
 def get_twitter_statuses_list(request):
     twitter_data = TwitterData.objects.all()
@@ -131,3 +135,23 @@ def translate_tweets(request):
     return JsonResponse(TwitterDataSerializer(TwitterData.objects.all(), many=True).data, safe=False)
 
 
+def analyze_tweets(request):
+    try:
+        analyzed = requests.post('http://localhost:3000/analyze/', data={
+            'tweets': json.dumps(TwitterDataSerializer(TwitterData.objects.all(), many=True).data)
+        })
+    except ValueError as err:
+        return JsonResponse(err.args, status=400, safe=False)
+    analyzed = json.loads(analyzed.content.decode('utf-8', 'ignore'))
+    print(json.loads(analyzed['result']))
+
+    for tweet in json.loads(analyzed['result']):
+        print('-------------------')
+        print(tweet)
+        temp_serializer = TwitterDataSerializer(TwitterData.objects.get(
+            status_id=tweet['status_id']),
+            data={'sentimental_value': tweet['sentimental_value']})
+        if temp_serializer.is_valid():
+            temp_serializer.save()
+
+    return JsonResponse(TwitterDataSerializer(TwitterData.objects.all(), many=True).data, safe=False)
