@@ -1,0 +1,9 @@
+Django==1.11.7
+djangorestframework==3.7.3
+pytz==2017.3
+twython==3.6.0
+django-cors-headers==2.1.0
+mongoengine==0.9
+pymongo==2.7
+django-rest-framework-mongoengine
+googletrans==2.2.0
