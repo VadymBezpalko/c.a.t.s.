@@ -7,6 +7,13 @@ class User(EmbeddedDocument):
     name = StringField()
 
 
+class Sentimental(EmbeddedDocument):
+    score = FloatField()
+    comparative = FloatField()
+    polarity = FloatField()
+    subjectivity = FloatField()
+
+
 class TwitterData(DynamicDocument):
     status_id = StringField()
     text = StringField()
@@ -15,5 +22,4 @@ class TwitterData(DynamicDocument):
     created_at = DateTimeField()
     retweeted_at = DateTimeField(null=True)
     user = EmbeddedDocumentField(User)
-    sentimental_score = FloatField()
-    sentimental_comparative = FloatField()
+    sentimental = EmbeddedDocumentField(Sentimental)

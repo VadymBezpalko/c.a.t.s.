@@ -7,3 +7,4 @@ mongoengine==0.9
 pymongo==2.7
 django-rest-framework-mongoengine
 googletrans==2.2.0
+textblob==0.15.0
