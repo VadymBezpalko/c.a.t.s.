@@ -1,26 +1,14 @@
 import time
-import re
-
-import json
-from django.views.decorators.csrf import csrf_exempt
-import requests
-from twython import Twython
-from django.http import JsonResponse
 from rest_framework.decorators import api_view
-from googletrans import Translator
-from textblob import TextBlob
+from django.http import JsonResponse
+from twython import Twython
+from django.conf import settings
 
 from twitter_api.serializers import TwitterDataSerializer
 from twitter_api.models import TwitterData
 
-# Create your views here.
 
-API_KEY = 'gmYLVJ21JFa0YB8zhIo71GJ9m'
-API_SECRET = '3CB6gOeqqpYLQ1Y1rlkVbvriCQjdyg3pXfq3kSpdjIR9kToSxj'
-TOKEN_KEY = '3365870121-PcBq6nthIQRWrcGwNRg1xUW5LGaOJ9CLd8262Ie'
-TOCKET_SECRET_KEY = 'AVUuT3QGFPK6x5icab7aSdI9fjC0Cje2tkLVsnIhfX9yI'
-
-api = Twython(API_KEY, API_SECRET)
+api = Twython(settings.API_KEY, settings.API_SECRET)
 
 
 @api_view(['POST'])
@@ -121,27 +109,8 @@ def get_statuses(request):
     return JsonResponse(tweets)
 
 
-def format_date(date):
-    return time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(date, '%a %b %d %H:%M:%S +0000 %Y'))
-
-
-def translate_text(text):
-    translator = Translator()
-    emoji_pattern = re.compile("["
-                               u"\U0001F600-\U0001F64F"  # emoticons
-                               u"\U0001F300-\U0001F5FF"  # symbols & pictographs
-                               u"\U0001F680-\U0001F6FF"  # transport & map symbols
-                               u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
-                               "]+", flags=re.UNICODE)
-
-    sanitized_text = emoji_pattern.sub(r'', text)
-    text = translator.translate(sanitized_text, dest='en').text
-
-    return text
-
-
-@csrf_exempt
-def get_twitter_statuses_list(request):
+@api_view(['GET'])
+def get_statuses_from_db(request):
     twitter_data = TwitterData.objects.all()
     serializer = TwitterDataSerializer(twitter_data, many=True)
     result = serializer.data
@@ -149,85 +118,5 @@ def get_twitter_statuses_list(request):
     return JsonResponse(result, safe=False)
 
 
-def translate_tweets(request):
-    twitter_data = TwitterData.objects.all()
-
-    for tweet in twitter_data:
-        print('-------------------')
-        print(tweet['text'])
-        if tweet['translated_text'] is None:
-            print('translating tweet...')
-            translated = translate_text(tweet['text'])
-            print(translated)
-            temp_serializer = TwitterDataSerializer(tweet, data={'translated_text': translated})
-            if temp_serializer.is_valid():
-                temp_serializer.save()
-        else:
-            print('tweet already been translated')
-
-    return JsonResponse(TwitterDataSerializer(TwitterData.objects.all(), many=True).data, safe=False)
-
-
-def analyze_tweets(request):
-    try:
-        analyzed = requests.post('http://localhost:3000/analyze/', data={
-            'tweets': json.dumps(TwitterDataSerializer(TwitterData.objects.all(), many=True).data)
-        })
-    except ValueError as err:
-        return JsonResponse(err.args, status=400, safe=False)
-    analyzed = json.loads(analyzed.content.decode('utf-8', 'ignore'))
-
-    for tweet in analyzed['result']:
-        print('-------------------')
-        print(tweet)
-        temp_serializer = TwitterDataSerializer(TwitterData.objects.get(
-            status_id=tweet['status_id']),
-            data={'sentimental': {'comparative': tweet['sentimental_comparative'],
-                                  'score': tweet['sentimental_score']}})
-        if temp_serializer.is_valid():
-            temp_serializer.save()
-
-    return JsonResponse(TwitterDataSerializer(TwitterData.objects.all(), many=True).data, safe=False)
-
-
-def analyze_tweets_nltk(request):
-    twitter_data = TwitterData.objects.all()
-
-    for tweet in twitter_data:
-        print('-------------------')
-        print(tweet['text'])
-        print('analyzing tweet...')
-        sentiment_analysis = TextBlob(tweet['translated_text'])
-        print(sentiment_analysis.sentiment)
-        temp_serializer = TwitterDataSerializer(
-            tweet,
-            data={
-                'sentimental': {
-                    'polarity': sentiment_analysis.sentiment.polarity,
-                    'subjectivity': sentiment_analysis.sentiment.subjectivity
-                }
-            }
-        )
-        if temp_serializer.is_valid():
-            temp_serializer.save()
-
-    return JsonResponse(TwitterDataSerializer(TwitterData.objects.all(), many=True).data, safe=False)
-
-
-def translate_tweets_nltk(request):
-    twitter_data = TwitterData.objects.all()
-
-    for tweet in twitter_data:
-        print('-------------------')
-        print(tweet['text'])
-        if tweet['translated_text'] is None:
-            print('translating tweet...')
-            translated = TextBlob(tweet['text']).translate(to='en')
-            print(translated)
-            temp_serializer = TwitterDataSerializer(tweet, data={'translated_text': translated})
-            if temp_serializer.is_valid():
-                temp_serializer.save()
-        else:
-            print('tweet already been translated')
-
-    return JsonResponse(TwitterDataSerializer(TwitterData.objects.all(), many=True).data, safe=False)
+def format_date(date):
+    return time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(date, '%a %b %d %H:%M:%S +0000 %Y'))
