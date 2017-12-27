@@ -43,7 +43,6 @@ def fetch_statuses(request):
             print(tweets_length)
             print(tweet['full_text'])
             print(tweet['created_at'])
-            new_tweet = True
             if 'retweeted_status' in tweet:
                 print('retweeted')
                 tweet_text = tweet['retweeted_status']['full_text']
@@ -59,10 +58,11 @@ def fetch_statuses(request):
 
             try:
                 temp = TwitterData.objects.get(status_id=tweet_id)
+                print('juz jest taki tweet')
                 if tweet['retweet_count'] > temp['retweet_count']:
                     serializer = TwitterDataSerializer(temp, data={"retweet_count": tweet["retweet_count"]})
-                    new_tweet = False
-                print('juz jest taki tweet')
+                else:
+                    continue
 
             except TwitterData.DoesNotExist:
                 print('tworzę nowy tweet')
@@ -78,7 +78,7 @@ def fetch_statuses(request):
                         'name': tweet['user']['name']
                     }
                 })
-            if new_tweet and serializer.is_valid():
+            if serializer.is_valid():
                 serializer.save()
                 tweets_length += 1
             else:
