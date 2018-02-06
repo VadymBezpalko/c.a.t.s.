@@ -23,3 +23,4 @@ class TwitterData(DynamicDocument):
     retweeted_at = DateTimeField(null=True)
     user = EmbeddedDocumentField(User)
     sentimental = EmbeddedDocumentField(Sentimental)
+    entities = ListField()
