@@ -1,0 +1,384 @@
+{
+	"info": {
+		"name": "CATS",
+		"_postman_id": "4543648f-a07a-3245-bb41-d3be21ccdfa6",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "stock data",
+			"description": "",
+			"item": [
+				{
+					"name": "/stock/load",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "start_date",
+									"value": "2017-12-09",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "end_date",
+									"value": "2017-12-16",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "symbol",
+									"value": "BZW",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "format",
+									"value": "csv",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/stock/load",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"stock",
+								"load"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/stock",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "http://127.0.0.1:8000/stock?sortBy=date",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"stock"
+							],
+							"query": [
+								{
+									"key": "sortBy",
+									"value": "date",
+									"equals": true
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "twitter data",
+			"description": "",
+			"item": [
+				{
+					"name": "/twitter/fetch",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "search",
+									"value": "bzwbk",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "since",
+									"value": "2017-12-20",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "until",
+									"value": "2017-12-27",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "count",
+									"value": "1000",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/twitter/fetch",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"twitter",
+								"fetch"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/twitter/translate",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "search",
+									"value": "bzwbk",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "since",
+									"value": "2017-12-14",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "until",
+									"value": "2017-12-16",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "count",
+									"value": "100",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/twitter/translate",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"twitter",
+								"translate"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/twitter",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "http://127.0.0.1:8000/twitter",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"twitter"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/twitter/get - for debug",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "search",
+									"value": "bzwbk",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "since",
+									"value": "2017-12-09",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "until",
+									"value": "2017-12-16",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "count",
+									"value": "100",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/twitter/get",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"twitter",
+								"get"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "twitter/analyze",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "text",
+									"value": "hello world!",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/twitter/analyze",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"twitter",
+								"analyze"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "twitter/analyze_nltk",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "text",
+									"value": "hello world!",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/twitter/analyze_nltk",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"twitter",
+								"analyze_nltk"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/twitter/entity_extraction",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "http://127.0.0.1:8000/twitter/entity_extraction",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"twitter",
+								"entity_extraction"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
