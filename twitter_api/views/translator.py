@@ -55,6 +55,9 @@ def translate_text(text):
                                "]+", flags=re.UNICODE)
 
     sanitized_text = emoji_pattern.sub(r'', text)
-    text = translator.translate(sanitized_text, dest='en').text
+    try:
+        text = translator.translate(sanitized_text, dest='en').text
+    except Exception:
+        pass
 
     return text

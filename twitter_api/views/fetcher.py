@@ -113,7 +113,21 @@ def get_statuses(request):
 def get_statuses_from_db(request):
     twitter_data = TwitterData.objects.all()
     serializer = TwitterDataSerializer(twitter_data, many=True)
-    result = serializer.data
+    temp = serializer.data
+    current_date = ''
+    result = []
+
+    for item in temp:
+        item['summary_sentimental'] = item['sentimental']['polarity'] * item['retweet_count'] \
+            if item['retweet_count'] > 0 \
+            else item['sentimental']['polarity']
+        item['created_at'] = item['created_at'][:10]
+
+        if item['created_at'][:10] == current_date:
+            result[-1]['summary_sentimental'] += item['summary_sentimental']
+        else:
+            result.append(item)
+            current_date = item['created_at'][:10]  # get date substring without hours
 
     return JsonResponse(result, safe=False)
 

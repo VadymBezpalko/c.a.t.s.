@@ -79,26 +79,3 @@ def get_stock_list(request):
 
     return JsonResponse(result, safe=False)
 
-
-@csrf_exempt
-def stock_item_detail(request, pk):
-    try:
-        stock_item = StockData.objects.get(pk=pk)
-    except StockData.DoesNotExist:
-        return HttpResponse(status=404)
-
-    if request.method == 'GET':
-        serializer = StockDataSerializer(stock_item)
-        return JsonResponse(serializer.data)
-
-    elif request.method == 'PUT':
-        data = JSONParser().parse(request)
-        serializer = StockDataSerializer(stock_item, data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
-
-    elif request.method == 'DELETE':
-        stock_item.delete()
-        return HttpResponse(status=204)
