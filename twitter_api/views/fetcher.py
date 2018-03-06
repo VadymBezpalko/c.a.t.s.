@@ -1,4 +1,5 @@
 import time
+from datetime import datetime, timedelta
 from rest_framework.decorators import api_view
 from django.http import JsonResponse
 from twython import Twython
@@ -16,22 +17,22 @@ def fetch_statuses(request):
     count_of_tweets_to_be_fetched = int(request.data['count'])
     tweets_length = 0
     for i in range(0, int(count_of_tweets_to_be_fetched / 100) + 1):
-        print(i, '******************************')
+        # print(i, '******************************')
         if int(count_of_tweets_to_be_fetched) < tweets_length:
             break
 
         if i == 0:
             results = api.search(q=request.data['search'],
                                  tweet_mode='extended',
-                                 since=request.data['since'],
-                                 until=request.data['until'],
+                                 since=(datetime.now() - timedelta(days=2)).strftime('%Y-%m-%d'),
+                                 until=(datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d'),
                                  count=100)
         else:
             # After the first call we should have max_id from result of previous call. Pass it in query.
             results = api.search(q=request.data['search'],
                                  tweet_mode='extended',
                                  count=100,
-                                 since=request.data['since'],
+                                 since=(datetime.now() - timedelta(days=2)).strftime('%Y-%m-%d'),
                                  include_entities='true',
                                  max_id=next_max_id)
 
@@ -39,18 +40,18 @@ def fetch_statuses(request):
         for tweet in results['statuses']:
             if int(count_of_tweets_to_be_fetched) < tweets_length:
                 break
-            print('-------------------')
-            print(tweets_length)
-            print(tweet['full_text'])
-            print(tweet['created_at'])
+            # print('-------------------')
+            # print(tweets_length)
+            # print(tweet['full_text'])
+            # print(tweet['created_at'])
             if 'retweeted_status' in tweet:
-                print('retweeted')
+                # print('retweeted')
                 tweet_text = tweet['retweeted_status']['full_text']
                 tweet_id = tweet['retweeted_status']['id_str']
                 created_at = tweet['retweeted_status']['created_at']
                 retweeted_at = tweet['created_at']
             else:
-                print('original tweet')
+                # print('original tweet')
                 tweet_text = tweet['full_text']
                 tweet_id = tweet['id_str']
                 created_at = tweet['created_at']
@@ -58,17 +59,18 @@ def fetch_statuses(request):
 
             try:
                 temp = TwitterData.objects.get(status_id=tweet_id)
-                print('juz jest taki tweet')
+                # print('juz jest taki tweet')
                 if tweet['retweet_count'] > temp['retweet_count']:
                     serializer = TwitterDataSerializer(temp, data={"retweet_count": tweet["retweet_count"]})
                 else:
                     continue
 
             except TwitterData.DoesNotExist:
-                print('tworzę nowy tweet')
+                # print('tworzę nowy tweet')
                 serializer = TwitterDataSerializer(data={
                     'status_id': tweet_id,
                     'text': tweet_text,
+                    'search_term': request.data['search'],
                     # 'translated_text': translate_text(tweet_text),
                     'retweet_count': tweet['retweet_count'],
                     'created_at': format_date(created_at),

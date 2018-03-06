@@ -16,6 +16,7 @@ class Sentimental(EmbeddedDocument):
 
 class TwitterData(DynamicDocument):
     status_id = StringField()
+    search_term = StringField()
     text = StringField()
     translated_text = StringField()
     retweet_count = FloatField()
