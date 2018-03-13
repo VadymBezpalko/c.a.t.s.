@@ -1,6 +1,8 @@
 from rest_framework.decorators import api_view
 from stock_data.models import StockData
 from twitter_api.models import TwitterData
+from django.http import JsonResponse
+
 import common.util as util
 
 
@@ -10,7 +12,7 @@ def get_pearson_correlation(request):
         search_term=request.data['search_term'],
         created_at__gt=request.data['from'],
         created_at__lt=request.data['to']
-    )
+    ).order_by('created_at')
     stock_query = StockData.objects(
         symbol=request.data['symbol'],
         date__gt=request.data['from'],
@@ -19,5 +21,7 @@ def get_pearson_correlation(request):
     twitter_messages = util.get_serialized_data(twitter_query, 'twitter')
     stock_data = util.get_serialized_data(stock_query, 'stock')
 
-    print('twitter data length', twitter_messages)
-    print('stock data length', stock_data)
+    print('twitter data length', len(twitter_messages))
+    print('stock data length', len(stock_data))
+
+    return JsonResponse([twitter_messages, stock_data], safe=False)

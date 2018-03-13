@@ -31,5 +31,5 @@ def get_serialized_data(data, data_type):
         raise ValueError('Wrong data type. Check type parameter.')
 
 
-def format_date(date):
+def format_date(date):  # helper method for twitter api
     return time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(date, '%a %b %d %H:%M:%S +0000 %Y'))

@@ -7,7 +7,7 @@ from mongoengine import Document, fields
 
 class StockData(Document):
     symbol = fields.StringField(required=True)
-    date = fields.StringField()
+    date = fields.DateTimeField()
     open = fields.FloatField()
     min = fields.FloatField()
     max = fields.FloatField()

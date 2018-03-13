@@ -1,20 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.parsers import JSONParser
 from stock_data.models import StockData
 from stock_data.serializers import StockDataSerializer
 import requests
 import csv
 from io import StringIO
-# Create your views here.
+from datetime import datetime
 
 
 @api_view(['POST'])
-def load_stock_data(request):
+def fetch_stock_data(request):
     url = 'https://www.money.pl/gielda/archiwum/spolki/'
 
     post_data = {
@@ -42,7 +40,7 @@ def save_stock_csv(data, symbol):
             break
         serializer = StockDataSerializer(data={
             'symbol': symbol,
-            'date': row[0],
+            'date': datetime.strptime(row[0], '%Y-%m-%d'),
             'open': row[1].replace(',', '.'),
             'min': row[2].replace(',', '.'),
             'max': row[3].replace(',', '.'),
