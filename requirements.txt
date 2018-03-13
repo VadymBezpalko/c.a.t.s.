@@ -6,7 +6,7 @@ pytz==2017.3
 twython==3.6.0
 django-cors-headers==2.1.0
 mongoengine==0.9
-pymongo==2.7
+pymongo==2.8.1
 django-rest-framework-mongoengine
 googletrans==2.2.0
 textblob==0.15.0

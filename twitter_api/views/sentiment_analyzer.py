@@ -12,11 +12,11 @@ def analyze_tweets_nltk(request):
     twitter_data = TwitterData.objects.all()
 
     for tweet in twitter_data:
-        print('-------------------')
-        print(tweet['text'])
-        print('analyzing tweet...')
+        # print('-------------------')
+        # print(tweet['text'])
+        # print('analyzing tweet...')
         sentiment_analysis = TextBlob(tweet['translated_text'])
-        print(sentiment_analysis.sentiment)
+        # print(sentiment_analysis.sentiment)
         temp_serializer = TwitterDataSerializer(
             tweet,
             data={
@@ -36,11 +36,11 @@ def named_entity_recognition(request):
     twitter_data = TwitterData.objects.all()
 
     for tweet in twitter_data:
-        print('-------------------')
-        print(tweet['translated_text'])
-        print('extracting NE tweet...')
+        # print('-------------------')
+        # print(tweet['translated_text'])
+        # print('extracting NE tweet...')
         entities = get_continuous_chunks(tweet['translated_text'])
-        print(entities)
+        # print(entities)
         temp_serializer = TwitterDataSerializer(
             tweet,
             data={
