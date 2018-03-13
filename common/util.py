@@ -22,10 +22,10 @@ def summarize_twitter_data(messages):
     return result
 
 
-def get_serialized_data(data, type):
-    if type == "twitter":
+def get_serialized_data(data, data_type):
+    if data_type == "twitter":
         return TwitterDataSerializer(data, many=True).data
-    elif type == "stock":
+    elif data_type == "stock":
         return StockDataSerializer(data, many=True).data
     else:
         raise ValueError('Wrong data type. Check type parameter.')

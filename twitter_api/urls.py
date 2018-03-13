@@ -10,5 +10,6 @@ urlpatterns = [
     url(r'^twitter/analyze_nltk$', sentiment_analyzer.analyze_tweets_nltk),
     url(r'^twitter/entity_extraction$', sentiment_analyzer.named_entity_recognition),
     url(r'^twitter/correlation$', correlation_analysis.get_pearson_correlation),
+    url(r'^twitter/debug', fetcher.get_direct_statuses),
     url(r'^twitter/$', fetcher.get_processed_messages),
 ]

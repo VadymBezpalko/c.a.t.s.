@@ -21,4 +21,3 @@ def get_pearson_correlation(request):
 
     print('twitter data length', twitter_messages)
     print('stock data length', stock_data)
-

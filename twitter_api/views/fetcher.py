@@ -100,6 +100,17 @@ def fetch_statuses(request):
     return JsonResponse(serializer.data, safe=False)
 
 
+@api_view(['POST'])
+def get_direct_statuses(request):  # for debug purposes
+    tweets = api.search(q=request.data['search'],
+                        tweet_mode='extended',
+                        since=request.data['since'],
+                        until=request.data['until'],
+                        count=request.data['count'])
+
+    return JsonResponse(tweets)
+
+
 @api_view(['GET'])
 def get_processed_messages(request):
     twitter_query = TwitterData.objects.all()
