@@ -10,18 +10,19 @@ import common.util as util
 def get_pearson_correlation(request):
     twitter_query = TwitterData.objects(
         search_term=request.data['search_term'],
-        created_at__gt=request.data['from'],
-        created_at__lt=request.data['to']
+        created_at__gte=request.data['from'],
+        created_at__lte=request.data['to']
     ).order_by('created_at')
     stock_query = StockData.objects(
         symbol=request.data['symbol'],
-        date__gt=request.data['from'],
-        date__lt=request.data['to']
+        date__gte=request.data['from'],
+        date__lte=request.data['to']
     )
     twitter_messages = util.get_serialized_data(twitter_query, 'twitter')
     stock_data = util.get_serialized_data(stock_query, 'stock')
-
+    summarized_messages = util.summarize_twitter_data(twitter_messages)
     print('twitter data length', len(twitter_messages))
+    print('summarized twitter data length', len(summarized_messages))
     print('stock data length', len(stock_data))
 
     return JsonResponse([twitter_messages, stock_data], safe=False)
