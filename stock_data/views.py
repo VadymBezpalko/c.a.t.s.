@@ -9,6 +9,7 @@ import requests
 import csv
 from io import StringIO
 from datetime import datetime
+import common.util as util
 
 
 @api_view(['POST'])
@@ -66,14 +67,18 @@ def save_stock_csv(data, symbol):
 
 @csrf_exempt
 def get_stock_list(request):
-    stock_data = StockData.objects.all()
-    serializer = StockDataSerializer(stock_data, many=True)
-    result = serializer.data
-
+    filter_by_name = request.GET.get('symbol', None)
     sort_by = request.GET.get('sortBy', None)
 
+    if filter_by_name is not None:
+        stock_data = StockData.objects(symbol=filter_by_name)
+    else:
+        stock_data = StockData.objects.all()
+
     if sort_by is not None:
-        result.sort(key=lambda x: x[sort_by], reverse=False)
+        stock_data.order_by(sort_by)
+
+    result = util.get_serialized_data(stock_data, 'stock')
 
     return JsonResponse(result, safe=False)
 

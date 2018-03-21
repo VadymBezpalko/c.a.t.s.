@@ -24,15 +24,18 @@ def fetch_statuses(request):
         if i == 0:
             results = api.search(q=request.data['search'],
                                  tweet_mode='extended',
-                                 since=(datetime.now() - timedelta(days=2)).strftime('%Y-%m-%d'),
-                                 until=(datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d'),
+                                 # since=(datetime.now() - timedelta(days=2)).strftime('%Y-%m-%d'),
+                                 since=request.data['since'],
+                                 until=request.data['until'],
+                                 # until=(datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d'),
                                  count=100)
         else:
             # After the first call we should have max_id from result of previous call. Pass it in query.
             results = api.search(q=request.data['search'],
                                  tweet_mode='extended',
                                  count=100,
-                                 since=(datetime.now() - timedelta(days=2)).strftime('%Y-%m-%d'),
+                                 # since=(datetime.now() - timedelta(days=2)).strftime('%Y-%m-%d'),
+                                 since=request.data['since'],
                                  include_entities='true',
                                  max_id=next_max_id)
 
@@ -113,8 +116,14 @@ def get_direct_statuses(request):  # for debug purposes
 
 @api_view(['GET'])
 def get_processed_messages(request):
-    twitter_query = TwitterData.objects.all()
-    twitter_messages = util.get_serialized_data(twitter_query, 'twitter')
+    search_term = request.GET.get('search_term', None)
+
+    if search_term is not None:
+        twitter_query = TwitterData.objects(search_term=search_term)
+    else:
+        twitter_query = TwitterData.objects.all()
+
+    twitter_messages = util.get_serialized_data(twitter_query.order_by('created_at'), 'twitter')
     result = util.summarize_twitter_data(twitter_messages)
 
     return JsonResponse(result, safe=False)
