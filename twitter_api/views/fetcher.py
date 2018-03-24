@@ -119,7 +119,11 @@ def get_processed_messages(request):
     search_term = request.GET.get('search_term', None)
 
     if search_term is not None:
-        twitter_query = TwitterData.objects(search_term=search_term)
+        twitter_query = TwitterData.objects(
+            search_term=search_term,
+            created_at__gte=request.GET.get('from', None),
+            created_at__lte=request.GET.get('to', None)
+        )
     else:
         twitter_query = TwitterData.objects.all()
 

@@ -67,18 +67,18 @@ def save_stock_csv(data, symbol):
 
 @csrf_exempt
 def get_stock_list(request):
-    filter_by_name = request.GET.get('symbol', None)
-    sort_by = request.GET.get('sortBy', None)
+    filter_by_name = request.GET.get('symbol')
 
     if filter_by_name is not None:
-        stock_data = StockData.objects(symbol=filter_by_name)
+        stock_data = StockData.objects(
+            symbol=filter_by_name,
+            date__gte=request.GET.get('from'),
+            date__lte=request.GET.get('to')
+        )
     else:
         stock_data = StockData.objects.all()
 
-    if sort_by is not None:
-        stock_data.order_by(sort_by)
-
-    result = util.get_serialized_data(stock_data, 'stock')
+    result = util.get_serialized_data(stock_data.order_by('date'), 'stock')
 
     return JsonResponse(result, safe=False)
 
