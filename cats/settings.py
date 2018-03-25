@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'rest_framework_mongoengine',
     'corsheaders',
     'stock_data.apps.StockDataConfig',
-    'twitter_api.apps.TwitterApiConfig'
+    'twitter_api.apps.TwitterApiConfig',
+    'named_entity.apps.NamedEntityConfig'
 
 
 ]

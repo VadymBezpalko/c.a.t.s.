@@ -20,4 +20,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^', include('stock_data.urls')),
     url(r'^', include('twitter_api.urls')),
+    url(r'^', include('named_entity.urls')),
 ]

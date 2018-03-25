@@ -3,6 +3,5 @@ __all__ = [
     "fetcher",
     "translator",
     "correlation_analysis",
-    "util",
-    "named_entity_recognition"
+    "util"
 ]
