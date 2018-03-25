@@ -10,8 +10,8 @@ from named_entity.models import NamedEntityData
 
 @api_view(['GET'])
 def named_entity_recognition(request):
-    print(request.GET.get('search_term', None))
-    twitter_data = TwitterData.objects(search_term=request.GET.get('search_term', None))
+    search_term = request.GET.get('search_term', None)
+    twitter_data = TwitterData.objects(search_term=search_term)
 
     for tweet in twitter_data:
         sentiment = tweet['sentimental']['polarity']
@@ -29,6 +29,7 @@ def named_entity_recognition(request):
             except NamedEntityData.DoesNotExist:
                 serializer = NamedEntityDataSerializer(data={
                     'text': temp_entity,
+                    'search_term': search_term,
                     'pos_quantity': 1 if sentiment >= 0 else 0,
                     'neg_quantity': 1 if sentiment < 0 else 0
                 })
@@ -38,7 +39,7 @@ def named_entity_recognition(request):
             else:
                 return JsonResponse(serializer.errors, status=400, safe=False)
 
-    return JsonResponse(NamedEntityDataSerializer(NamedEntityData.objects.all(), many=True).data, safe=False)
+    return JsonResponse(NamedEntityDataSerializer(NamedEntityData.objects(search_term=request.GET.get('search_term', None)), many=True).data, safe=False)
 
 
 def get_continuous_chunks(text):
