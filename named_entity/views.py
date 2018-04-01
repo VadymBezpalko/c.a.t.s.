@@ -9,7 +9,7 @@ from named_entity.models import NamedEntityData
 
 
 @api_view(['GET'])
-def named_entity_recognition(request):
+def ner_process(request):
     search_term = request.GET.get('search_term', None)
     twitter_data = TwitterData.objects(search_term=search_term)
 
@@ -57,3 +57,10 @@ def get_continuous_chunks(text):
             else:
                     continue
     return continuous_chunk
+
+
+@api_view(['GET'])
+def get_ner_data(request):
+    search_term = request.GET.get('search_term', None)
+    return JsonResponse(
+        NamedEntityDataSerializer(NamedEntityData.objects(search_term=search_term), many=True).data, safe=False)
