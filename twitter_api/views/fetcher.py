@@ -128,7 +128,7 @@ def get_processed_messages(request):
         twitter_query = TwitterData.objects.all()
 
     twitter_messages = util.get_serialized_data(twitter_query.order_by('created_at'), 'twitter')
-    result = util.summarize_twitter_data(twitter_messages)
+    result = util.summarize_twitter_data_by_day(twitter_messages)
 
     return JsonResponse(result, safe=False)
 
