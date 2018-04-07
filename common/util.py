@@ -13,11 +13,12 @@ def summarize_twitter_data_by_day(messages):
         message['average_sentimental'] = message['summary_sentimental']
         message['created_at'] = message['created_at'][:10]
 
-        if message['created_at'][:10] == current_date:
+        if message['created_at'][:10] == current_date:  # messages from same day
             same_day_counter += 1
             result[-1]['summary_sentimental'] += message['summary_sentimental']
-        else:
+        else:  # messages from new day
             if same_day_counter > 0:
+                # not the first day
                 # if now we getting data from next day, then evaluate average value for previous day
                 result[-1]['average_sentimental'] = result[-1]['summary_sentimental'] / (same_day_counter + 1)
                 same_day_counter = 0
