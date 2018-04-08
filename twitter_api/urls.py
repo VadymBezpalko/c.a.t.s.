@@ -10,4 +10,5 @@ urlpatterns = [
     url(r'^twitter/correlation$', correlation_analysis.get_pearson_correlation),
     url(r'^twitter/debug', fetcher.get_direct_statuses),
     url(r'^twitter/processed_messages$', fetcher.get_processed_messages),
+    url(r'^twitter/messages$', fetcher.get_twitter_messages),
 ]

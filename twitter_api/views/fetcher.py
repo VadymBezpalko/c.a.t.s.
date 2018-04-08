@@ -133,4 +133,13 @@ def get_processed_messages(request):
     return JsonResponse(result, safe=False)
 
 
+@api_view(['GET'])
+def get_twitter_messages(request):
+    twitter_query = TwitterData.objects(
+        search_term=request.GET.get('search_term', None),
+        created_at__gte=request.GET.get('from', None),
+        created_at__lte=request.GET.get('to', None)
+    )
+    twitter_messages = util.get_serialized_data(twitter_query.order_by('-retweet_count'), 'twitter')
 
+    return JsonResponse(twitter_messages, safe=False)
