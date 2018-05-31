@@ -29,6 +29,39 @@ def summarize_twitter_data_by_day(messages):
     return result
 
 
+def count_different_messages(messages):
+    current_date = 'start'
+    result = []
+    daily_result = {"neutral": 0, "positive": 0, "negative": 0, "date": ""}
+
+    for message in messages:
+        if message['created_at'][:10] == current_date:  # messages from same day
+            daily_result = get_message_emotion_tuple(message, daily_result)
+        else:
+            if current_date == 'start':
+                current_date = message['created_at'][:10]
+                daily_result['date'] = current_date
+                daily_result = get_message_emotion_tuple(message, daily_result)
+            else:
+                result.append(daily_result)
+                current_date = message['created_at'][:10]
+                daily_result = {"neutral": 0, "positive": 0, "negative": 0, "date": current_date}
+                daily_result = get_message_emotion_tuple(message, daily_result)
+    return result
+
+
+def get_message_emotion_tuple(message, temp_tuple):
+    if message['sentimental']['polarity'] == 0:
+        temp_tuple["neutral"] += 1
+    else:
+        if message['sentimental']['polarity'] > 0:
+            temp_tuple["positive"] += 1
+        else:
+            temp_tuple["negative"] += 1
+
+    return temp_tuple
+
+
 def get_serialized_data(data, data_type):
     if data_type == "twitter":
         return TwitterDataSerializer(data, many=True).data

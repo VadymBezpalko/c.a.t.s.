@@ -134,6 +134,25 @@ def get_processed_messages(request):
 
 
 @api_view(['GET'])
+def get_different_messages(request):
+    search_term = request.GET.get('search_term', None)
+
+    if search_term is not None:
+        twitter_query = TwitterData.objects(
+            search_term=search_term,
+            created_at__gte=request.GET.get('from', None),
+            created_at__lte=request.GET.get('to', None)
+        )
+    else:
+        twitter_query = TwitterData.objects.all()
+
+    twitter_messages = util.get_serialized_data(twitter_query.order_by('created_at'), 'twitter')
+    result = util.count_different_messages(twitter_messages)
+
+    return JsonResponse(result, safe=False)
+
+
+@api_view(['GET'])
 def get_twitter_messages(request):
     twitter_query = TwitterData.objects(
         search_term=request.GET.get('search_term', None),

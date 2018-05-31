@@ -3,6 +3,7 @@ __all__ = [
     "fetcher",
     "translator",
     "correlation_analysis",
+    "correlation_analysis_2",
     "statistic_analyzer",
     "util"
 ]

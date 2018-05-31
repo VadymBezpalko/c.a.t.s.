@@ -11,6 +11,5 @@ def get_retweets_stat(request):
     twitter_messages = util.get_serialized_data(twitter_query, 'twitter')
 
     c = Counter(message['retweet_count'] for message in twitter_messages)
-    print(c)
 
     return JsonResponse(c, safe=False)
