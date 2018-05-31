@@ -46,6 +46,7 @@ def get_pearson_correlation(request):
 
 @api_view(['POST'])
 def get_pearson_correlation_2(request):
+    # types: number(total number), neutral, positive, negative
     twitter_query = TwitterData.objects(
         search_term=request.data['search_term'],
         created_at__gte=request.data['from'],
@@ -60,7 +61,10 @@ def get_pearson_correlation_2(request):
 
     twitter_messages = util.get_serialized_data(twitter_query, 'twitter')
     stock_data = util.get_serialized_data(stock_query, 'stock')
-    summarized_messages = util.count_daily_messages(twitter_messages)
+    if request.data['type'] == 'number':
+        summarized_messages = util.count_daily_messages(twitter_messages)
+    else:
+        summarized_messages = util.count_different_messages(twitter_messages)
 
     # temp list containing strings with available stock dates
     # used for eliminating "non stock days" messages - weekend messages
@@ -74,7 +78,7 @@ def get_pearson_correlation_2(request):
     for message in summarized_messages:
         for item in strings_list:
             if message['date'] in item:
-                trimmed_twitter_messages.append(message['number'])
+                trimmed_twitter_messages.append(message[request.data['type']])
                 trimmed_stock_data.append(next((x['close'] for x in stock_data if x['date'] == item), None))
 
     correlation = numpy.corrcoef(trimmed_twitter_messages, trimmed_stock_data)[0, 1]
