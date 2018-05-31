@@ -50,6 +50,27 @@ def count_different_messages(messages):
     return result
 
 
+def count_daily_messages(messages):
+    current_date = 'start'
+    result = []
+    daily_result = {"number": 0, "date": ""}
+
+    for message in messages:
+        if message['created_at'][:10] == current_date:  # messages from same day
+            daily_result["number"] += 1
+        else:
+            if current_date == 'start':
+                current_date = message['created_at'][:10]
+                daily_result['date'] = current_date
+                daily_result["number"] += 1
+            else:
+                result.append(daily_result)
+                current_date = message['created_at'][:10]
+                daily_result = {"number": 0, "date": current_date}
+                daily_result["number"] += 1
+    return result
+
+
 def get_message_emotion_tuple(message, temp_tuple):
     if message['sentimental']['polarity'] == 0:
         temp_tuple["neutral"] += 1

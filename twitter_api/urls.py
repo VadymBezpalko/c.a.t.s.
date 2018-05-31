@@ -9,9 +9,11 @@ urlpatterns = [
     url(r'^twitter/translate$', translator.translate_tweets),
     url(r'^twitter/sentiment_analysis', sentiment_analyzer.make_sentiment_analysis),
     url(r'^twitter/correlation$', correlation_analysis.get_pearson_correlation),
+    url(r'^twitter/correlation_2$', correlation_analysis.get_pearson_correlation_2),
     url(r'^twitter/debug', fetcher.get_direct_statuses),
     url(r'^twitter/processed_messages$', fetcher.get_processed_messages),
     url(r'^twitter/different_messages', fetcher.get_different_messages),
+    url(r'^twitter/messages_per_day', fetcher.get_messages_per_day),
     url(r'^twitter/messages$', fetcher.get_twitter_messages),
     url(r'^stats/retweets', statistic_analyzer.get_retweets_stat),
 ]
