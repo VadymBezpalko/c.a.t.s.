@@ -2,6 +2,7 @@ from django.conf.urls import url
 from twitter_api.views import fetcher, correlation_analysis
 from twitter_api.views import translator
 from twitter_api.views import sentiment_analyzer
+from twitter_api.views import statistic_analyzer
 
 urlpatterns = [
     url(r'^twitter/fetch$', fetcher.fetch_statuses),
@@ -11,4 +12,5 @@ urlpatterns = [
     url(r'^twitter/debug', fetcher.get_direct_statuses),
     url(r'^twitter/processed_messages$', fetcher.get_processed_messages),
     url(r'^twitter/messages$', fetcher.get_twitter_messages),
+    url(r'^stats/retweets', statistic_analyzer.get_retweets_stat),
 ]
